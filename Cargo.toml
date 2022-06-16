@@ -1,0 +1,9 @@
+# img2irc (C) 2022 Sadie Powell <sadie@witchery.services>
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+[package]
+name = "img2irc"
+version = "0.0.0"
+edition = "2021"
+
+[dependencies]
