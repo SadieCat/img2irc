@@ -1,9 +1,11 @@
 // img2irc (C) 2022 Sadie Powell <sadie@witchery.services>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+use crate::irc::ColourType;
+
 use image::imageops::FilterType;
 use image::io::Reader as ImageReader;
-use image::DynamicImage;
+use image::{DynamicImage, GenericImageView, Pixel};
 
 use std::num::NonZeroU32;
 use std::path::PathBuf;
@@ -14,6 +16,26 @@ pub struct Image {
 }
 
 impl Image {
+    /// Converts the image to IRC formatting.
+    pub fn convert(&mut self, colour_type: ColourType) -> String {
+        // Iterate over all pixels and convert them.
+        let mut buffer = String::new();
+        for row in 0..self.image.height() {
+            for column in 0..self.image.width() {
+                let pixel = self.image.get_pixel(column, row);
+                buffer.push_str(&colour_type.to_irc(pixel.channels()));
+                buffer.push_str("\u{2588}\u{2588}");
+            }
+
+            if cfg!(windows) {
+                buffer.push_str("\r\n");
+            } else {
+                buffer.push('\n');
+            }
+        }
+        buffer
+    }
+
     /// Reads an image from a file.
     pub fn read(path: &PathBuf) -> Result<Self, String> {
         let image = ImageReader::open(path)
