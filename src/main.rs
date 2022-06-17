@@ -27,8 +27,8 @@ pub struct Args {
     pub max_height: Option<NonZeroU32>,
 
     /// The maximum width of the output text.
-    #[clap(default_value_t = NonZeroU32::new(80).unwrap(), long, short = 'w', value_name = "WIDTH")]
-    pub max_width: NonZeroU32,
+    #[clap(long, short = 'w', value_name = "WIDTH")]
+    pub max_width: Option<NonZeroU32>,
 
     /// The path to the input image.
     #[clap(value_name = "IMAGE")]
@@ -47,7 +47,8 @@ fn main() {
         eprintln!("Unable to read {}: {}.", args.source.display(), err);
         process::exit(1);
     });
-    image.resize(args.max_width, args.max_height);
+    let max_width = args.max_width.unwrap_or(args.colour_type.default_width());
+    image.resize(max_width, args.max_height);
 
     // Convert the image to IRC formatting.
     let text = image.convert(args.colour_type);

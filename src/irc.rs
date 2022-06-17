@@ -5,6 +5,7 @@ use lazy_static::lazy_static;
 
 use std::collections::HashMap;
 use std::fmt;
+use std::num::NonZeroU32;
 use std::str::FromStr;
 
 type ColourCodes = HashMap<u8, (u8, u8, u8)>;
@@ -189,6 +190,16 @@ impl ColourType {
     fn vector_length(pixel: &(u8, u8, u8)) -> f64 {
         let pows = (pixel.0 as u64).pow(2) + (pixel.1 as u64).pow(2) + (pixel.2 as u64).pow(2);
         (pows as f64).sqrt()
+    }
+
+    /// Determines the default line width for a colour type.
+    pub fn default_width(&self) -> NonZeroU32 {
+        NonZeroU32::new(match self {
+            ColourType::Basic => 54,
+            ColourType::Extended => 54,
+            ColourType::RGB => 23,
+        })
+        .unwrap()
     }
 }
 
