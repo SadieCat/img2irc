@@ -1,14 +1,17 @@
 // img2irc (C) 2022 Sadie Powell <sadie@witchery.services>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+mod img;
 mod irc;
 
+use crate::img::Image;
 use crate::irc::ColourType;
 
 use clap::Parser;
 
 use std::num::NonZeroU32;
 use std::path::PathBuf;
+use std::process;
 
 #[derive(Parser)]
 #[clap(author, version)]
@@ -36,4 +39,12 @@ pub struct Args {
 
 fn main() {
     let args = Args::parse();
+
+    // Prepare the image for conversion.
+    let mut image = Image::read(&args.source).unwrap_or_else(|err| {
+        eprintln!("Unable to read {}: {}.", args.source.display(), err);
+        process::exit(1);
+    });
+    image.resize(args.max_width, args.max_height);
+
 }
