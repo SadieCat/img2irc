@@ -6,6 +6,15 @@ name = "img2irc"
 version = "0.0.0"
 edition = "2021"
 
+categories = ["command-line-utilities", "multimedia::images"]
+description = "A tool that allows converting images to IRC formatting codes."
+documentation = "https://docs.rs/img2irc/"
+homepage = "https://github.com/SadieCat/img2irc/"
+keywords = ["internet-relay-chat", "irc"]
+license = "AGPL-3.0-or-later"
+readme = "README.md"
+repository = "https://github.com/SadieCat/img2irc/"
+
 [dependencies]
 clap = { version = "3.2.5", features = ["derive"] }
 image = "0.24.2"
