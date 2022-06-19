@@ -43,7 +43,7 @@ impl Image {
             .map_err(|err| err.to_string())
             .and_then(|img| img.decode().map_err(|err| err.to_string()))?;
 
-        Ok(Image { image })
+        Ok(Self { image })
     }
 
     /// Resizes the image to fit within the specified bounds.

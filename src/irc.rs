@@ -174,15 +174,15 @@ impl ColourType {
     /// Converts a pixel to an IRC colour code.
     pub fn to_irc(&self, pixel: &[u8]) -> String {
         match self {
-            ColourType::Basic => {
+            Self::Basic => {
                 let code = Self::find_nearest(pixel, &BASIC);
                 format!("\x03{:0>2},{:0>2}", code, code)
             }
-            ColourType::Extended => {
+            Self::Extended => {
                 let code = Self::find_nearest(pixel, &EXTENDED);
                 format!("\x03{:0>2},{:0>2}", code, code)
             }
-            ColourType::RGB => format!(
+            Self::RGB => format!(
                 "\x04{:0>2X}{:0>2X}{:0>2X},{:0>2X}{:0>2X}{:0>2X}",
                 pixel[0], pixel[1], pixel[2], pixel[0], pixel[1], pixel[2]
             ),
@@ -192,9 +192,9 @@ impl ColourType {
     /// Determines the default line width for a colour type.
     pub fn default_width(&self) -> NonZeroU32 {
         NonZeroU32::new(match self {
-            ColourType::Basic => 54,
-            ColourType::Extended => 54,
-            ColourType::RGB => 23,
+            Self::Basic => 54,
+            Self::Extended => 54,
+            Self::RGB => 23,
         })
         .unwrap()
     }
@@ -205,9 +205,9 @@ impl FromStr for ColourType {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_lowercase().as_str() {
-            "basic" => Ok(ColourType::Basic),
-            "extended" => Ok(ColourType::Extended),
-            "rgb" => Ok(ColourType::RGB),
+            "basic" => Ok(Self::Basic),
+            "extended" => Ok(Self::Extended),
+            "rgb" => Ok(Self::RGB),
             _ => Err("valid values: basic, extended, rgb"),
         }
     }
@@ -216,9 +216,9 @@ impl FromStr for ColourType {
 impl fmt::Display for ColourType {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
         let display = match *self {
-            ColourType::Basic => "basic",
-            ColourType::Extended => "extended",
-            ColourType::RGB => "rgb",
+            Self::Basic => "basic",
+            Self::Extended => "extended",
+            Self::RGB => "rgb",
         };
         write!(fmt, "{}", display)
     }
