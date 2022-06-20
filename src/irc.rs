@@ -215,7 +215,7 @@ impl FromStr for ColourType {
 
 impl fmt::Display for ColourType {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
-        let display = match *self {
+        let display = match self {
             Self::Basic => "basic",
             Self::Extended => "extended",
             Self::RGB => "rgb",
