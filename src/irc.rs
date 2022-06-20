@@ -155,7 +155,7 @@ impl ColourType {
         let mut smallest_irc = 99u8;
         let mut smallest_diff = f64::MAX;
         for (irc, hex) in codes {
-            let oklab_hex = oklab::srgb_to_oklab(oklab::RGB::new(hex.0, hex.1, hex.2));
+            let oklab_hex = srgb_to_oklab(RGB::new(hex.0, hex.1, hex.2));
             let delta_l = (oklab_hex.l - oklab_pixel.l) as f64;
             let delta_a = (oklab_hex.a - oklab_pixel.a) as f64;
             let delta_b = (oklab_hex.b - oklab_pixel.b) as f64;
