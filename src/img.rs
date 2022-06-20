@@ -17,7 +17,7 @@ pub struct Image {
 
 impl Image {
     /// Converts the image to IRC formatting.
-    pub fn convert(&mut self, colour_type: ColourType) -> String {
+    pub fn convert(&mut self, colour_type: &ColourType) -> String {
         // Iterate over all pixels and convert them.
         let mut buffer = String::new();
         for row in 0..self.image.height() {

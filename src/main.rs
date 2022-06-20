@@ -51,7 +51,7 @@ fn main() {
     image.resize(max_width, args.max_height);
 
     // Convert the image to IRC formatting.
-    let text = image.convert(args.colour_type);
+    let text = image.convert(&args.colour_type);
 
     // Write the output to the target.
     let mut fh = match &args.target {
