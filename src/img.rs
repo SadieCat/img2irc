@@ -17,14 +17,14 @@ pub struct Image {
 
 impl Image {
     /// Converts the image to IRC formatting.
-    pub fn convert(&mut self, colour_type: &ColourType) -> String {
+    pub fn convert(&mut self, colour_type: &ColourType, min_alpha: u8) -> String {
         // Iterate over all pixels and convert them.
         let mut buffer = String::new();
         let mut previous_colour = String::new();
         for row in 0..self.image.height() {
             for column in 0..self.image.width() {
                 let pixel = self.image.get_pixel(column, row);
-                let colour = colour_type.to_irc(pixel.channels());
+                let colour = colour_type.to_irc(pixel.channels(), min_alpha);
                 if colour != previous_colour {
                     buffer.push_str(&colour);
                     previous_colour = colour;

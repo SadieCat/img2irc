@@ -30,6 +30,10 @@ pub struct Args {
     #[clap(long, short = 'w', value_name = "WIDTH")]
     pub max_width: Option<NonZeroU32>,
 
+    /// The minimum alpha level to treat as a coloured tile.
+    #[clap(default_value_t = 0, long, short = 't', value_name = "WIDTH")]
+    pub min_alpha: u8,
+
     /// The path to the input image.
     #[clap(value_name = "IMAGE")]
     pub source: PathBuf,
@@ -51,7 +55,7 @@ fn main() {
     image.resize(max_width, args.max_height);
 
     // Convert the image to IRC formatting.
-    let text = image.convert(&args.colour_type);
+    let text = image.convert(&args.colour_type, args.min_alpha);
 
     // Write the output to the target.
     let mut fh = match &args.target {

@@ -172,7 +172,10 @@ impl ColourType {
     }
 
     /// Converts a pixel to an IRC colour code.
-    pub fn to_irc(&self, pixel: &[u8]) -> String {
+    pub fn to_irc(&self, pixel: &[u8], min_alpha: u8) -> String {
+        if pixel[3] < min_alpha {
+            return "\x0F".into();
+        }
         match self {
             Self::Basic => {
                 let code = Self::find_nearest(pixel, &BASIC);
