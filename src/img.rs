@@ -1,7 +1,7 @@
 // img2irc (C) 2022 Sadie Powell <sadie@witchery.services>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-use crate::irc::ColourType;
+use crate::irc::{ColourType, EscapeType};
 
 use image::imageops::FilterType;
 use image::io::Reader as ImageReader;
@@ -17,14 +17,19 @@ pub struct Image {
 
 impl Image {
     /// Converts the image to IRC formatting.
-    pub fn convert(&mut self, colour_type: &ColourType, min_alpha: u8) -> String {
+    pub fn convert(
+        &mut self,
+        colour_type: &ColourType,
+        escape_type: &EscapeType,
+        min_alpha: u8,
+    ) -> String {
         // Iterate over all pixels and convert them.
         let mut buffer = String::new();
         let mut previous_colour = String::new();
         for row in 0..self.image.height() {
             for column in 0..self.image.width() {
                 let pixel = self.image.get_pixel(column, row);
-                let colour = colour_type.to_irc(pixel.channels(), min_alpha);
+                let colour = colour_type.to_irc(pixel.channels(), escape_type, min_alpha);
                 if colour != previous_colour {
                     buffer.push_str(&colour);
                     previous_colour = colour;

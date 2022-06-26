@@ -172,23 +172,28 @@ impl ColourType {
     }
 
     /// Converts a pixel to an IRC colour code.
-    pub fn to_irc(&self, pixel: &[u8], min_alpha: u8) -> String {
+    pub fn to_irc(&self, pixel: &[u8], escape_type: &EscapeType, min_alpha: u8) -> String {
         if pixel[3] < min_alpha {
-            return "\x0F".into();
+            return escape_type.reset().into();
         }
         match self {
             Self::Basic => {
+                let escape = escape_type.colour();
                 let code = Self::find_nearest(pixel, &BASIC);
-                format!("\x03{:0>2},{:0>2}", code, code)
+                format!("{}{:0>2},{:0>2}", escape, code, code)
             }
             Self::Extended => {
+                let escape = escape_type.colour();
                 let code = Self::find_nearest(pixel, &EXTENDED);
-                format!("\x03{:0>2},{:0>2}", code, code)
+                format!("{}{:0>2},{:0>2}", escape, code, code)
             }
-            Self::RGB => format!(
-                "\x04{:0>2X}{:0>2X}{:0>2X},{:0>2X}{:0>2X}{:0>2X}",
-                pixel[0], pixel[1], pixel[2], pixel[0], pixel[1], pixel[2]
-            ),
+            Self::RGB => {
+                let escape = escape_type.hex_colour();
+                format!(
+                    "{}{:0>2X}{:0>2X}{:0>2X},{:0>2X}{:0>2X}{:0>2X}",
+                    escape, pixel[0], pixel[1], pixel[2], pixel[0], pixel[1], pixel[2]
+                )
+            }
         }
     }
 
@@ -224,5 +229,70 @@ impl fmt::Display for ColourType {
             Self::RGB => "rgb",
         };
         write!(fmt, "{}", display)
+    }
+}
+
+/// Different types of IRC colour escape.
+pub enum EscapeType {
+    /// Emit control characters.
+    Control,
+
+    /// Emit InspIRCd config escape characters.
+    InspConfig,
+
+    /// Emit InspIRCd MOTD escape characters.
+    InspMOTD,
+}
+
+impl FromStr for EscapeType {
+    type Err = &'static str;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.to_lowercase().as_str() {
+            "control" => Ok(Self::Control),
+            "insp-config" => Ok(Self::InspConfig),
+            "insp-motd" => Ok(Self::InspMOTD),
+            _ => Err("valid values: control, insp-config, insp-config"),
+        }
+    }
+}
+
+impl fmt::Display for EscapeType {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let display = match self {
+            Self::Control => "control",
+            Self::InspConfig => "insp-config",
+            Self::InspMOTD => "insp-motd",
+        };
+        write!(fmt, "{}", display)
+    }
+}
+
+impl EscapeType {
+    /// Retrieves the colour sequence for this type.
+    fn colour(&self) -> &'static str {
+        match self {
+            EscapeType::Control => "\x03",
+            EscapeType::InspConfig => "&irc.colour;",
+            EscapeType::InspMOTD => "\\c",
+        }
+    }
+
+    /// Retrieves the hex colour sequence for this type.
+    fn hex_colour(&self) -> &'static str {
+        match self {
+            EscapeType::Control => "\x04",
+            EscapeType::InspConfig => "&irc.hexcolour;",
+            EscapeType::InspMOTD => "\\h",
+        }
+    }
+
+    /// Retrieves the reset sequence for this type.
+    fn reset(&self) -> &'static str {
+        match self {
+            EscapeType::Control => "\x0F",
+            EscapeType::InspConfig => "&irc.reset;",
+            EscapeType::InspMOTD => "\\x",
+        }
     }
 }

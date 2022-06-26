@@ -5,7 +5,7 @@ mod img;
 mod irc;
 
 use crate::img::Image;
-use crate::irc::ColourType;
+use crate::irc::{ColourType, EscapeType};
 
 use clap::Parser;
 
@@ -18,9 +18,13 @@ use std::process;
 #[derive(Parser)]
 #[clap(author, version)]
 pub struct Args {
-    /// Whether to use basic, extended, or RGB colours.
+    /// Whether to emit basic, extended, or RGB colours.
     #[clap(default_value_t = ColourType::Basic, long, short, value_name = "TYPE")]
     pub colour_type: ColourType,
+
+    /// Whether to emit raw control characters, InspIRCd config escape sequences, or InspIRCd MOTD escape sequences.
+    #[clap(default_value_t = EscapeType::Control, long, short, value_name = "TYPE")]
+    pub escape_type: EscapeType,
 
     /// The maximum height of the output text.
     #[clap(long, short = 'h', value_name = "HEIGHT")]
@@ -55,7 +59,7 @@ fn main() {
     image.resize(max_width, args.max_height);
 
     // Convert the image to IRC formatting.
-    let text = image.convert(&args.colour_type, args.min_alpha);
+    let text = image.convert(&args.colour_type, &args.escape_type, args.min_alpha);
 
     // Write the output to the target.
     let mut fh = match &args.target {
