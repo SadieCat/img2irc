@@ -13,9 +13,12 @@ ARGS:
     <TARGET>    The path to the output text
 
 OPTIONS:
-    -c, --colour-type <TYPE>     Whether to use basic, extended, or RGB colours [default: basic]
+    -c, --colour-type <TYPE>     Whether to emit basic, extended, or RGB colours [default: basic]
+    -e, --escape-type <TYPE>     Whether to emit raw control characters, InspIRCd config escape
+                                 sequences, or InspIRCd MOTD escape sequences [default: control]
     -h, --max-height <HEIGHT>    The maximum height of the output text
         --help                   Print help information
+    -t, --min-alpha <WIDTH>      The minimum alpha level to treat as a coloured tile [default: 0]
     -V, --version                Print version information
     -w, --max-width <WIDTH>      The maximum width of the output text
 ```
