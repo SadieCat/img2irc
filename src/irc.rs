@@ -252,7 +252,7 @@ impl FromStr for EscapeType {
             "control" => Ok(Self::Control),
             "insp-config" => Ok(Self::InspConfig),
             "insp-motd" => Ok(Self::InspMOTD),
-            _ => Err("valid values: control, insp-config, insp-config"),
+            _ => Err("valid values: control, insp-config, insp-motd"),
         }
     }
 }
