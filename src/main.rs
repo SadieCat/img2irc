@@ -27,7 +27,7 @@ pub struct Args {
     pub escape_type: EscapeType,
 
     /// The maximum height of the output text.
-    #[clap(long, short = 'h', value_name = "HEIGHT")]
+    #[clap(long, short = 'H', value_name = "HEIGHT")]
     pub max_height: Option<NonZeroU32>,
 
     /// The maximum width of the output text.

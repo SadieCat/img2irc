@@ -137,6 +137,7 @@ lazy_static! {
 }
 
 /// Different types of IRC colour code.
+#[derive(Clone)]
 pub enum ColourType {
     /// Use colour codes 00-15.
     Basic,
@@ -233,6 +234,7 @@ impl fmt::Display for ColourType {
 }
 
 /// Different types of IRC colour escape.
+#[derive(Clone)]
 pub enum EscapeType {
     /// Emit control characters.
     Control,
