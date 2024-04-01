@@ -17,6 +17,6 @@ repository = "https://github.com/SadieCat/img2irc/"
 
 [dependencies]
 clap = { version = "4.0.7", features = ["derive"] }
-image = "0.24.2"
+image = "0.25.1"
 lazy_static = "1.4.0"
 oklab = "1.0.0"
