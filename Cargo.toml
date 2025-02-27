@@ -4,7 +4,7 @@
 [package]
 name = "img2irc"
 version = "0.3.0"
-edition = "2021"
+edition = "2024"
 
 categories = ["command-line-utilities", "multimedia::images"]
 description = "A tool that allows converting images to IRC formatting codes."
@@ -16,7 +16,7 @@ readme = "README.md"
 repository = "https://github.com/SadieCat/img2irc/"
 
 [dependencies]
-clap = { version = "4.0.7", features = ["derive"] }
-image = "0.25.1"
-lazy_static = "1.4.0"
-oklab = "1.0.0"
+clap = { version = "4.5.31", features = ["derive"] }
+image = "0.25.5"
+lazy_static = "1.5.0"
+oklab = "1.1.2"

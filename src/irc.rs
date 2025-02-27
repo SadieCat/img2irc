@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 use lazy_static::lazy_static;
-use oklab::{srgb_to_oklab, RGB};
+use oklab::{Rgb, srgb_to_oklab};
 
 use std::collections::HashMap;
 use std::fmt;
@@ -152,11 +152,11 @@ pub enum ColourType {
 impl ColourType {
     /// Finds the nearest IRC colour code to a pixel.
     fn find_nearest(pixel: &[u8], codes: &ColourCodes) -> u8 {
-        let oklab_pixel = srgb_to_oklab(RGB::new(pixel[0], pixel[1], pixel[2]));
+        let oklab_pixel = srgb_to_oklab(Rgb::new(pixel[0], pixel[1], pixel[2]));
         let mut smallest_irc = 99u8;
         let mut smallest_diff = f64::MAX;
         for (irc, hex) in codes {
-            let oklab_hex = srgb_to_oklab(RGB::new(hex.0, hex.1, hex.2));
+            let oklab_hex = srgb_to_oklab(Rgb::new(hex.0, hex.1, hex.2));
             let delta_l = (oklab_hex.l - oklab_pixel.l) as f64;
             let delta_a = (oklab_hex.a - oklab_pixel.a) as f64;
             let delta_b = (oklab_hex.b - oklab_pixel.b) as f64;

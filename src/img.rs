@@ -3,8 +3,8 @@
 
 use crate::irc::{ColourType, EscapeType};
 
+use image::ImageReader;
 use image::imageops::FilterType;
-use image::io::Reader as ImageReader;
 use image::{DynamicImage, GenericImageView, Pixel};
 
 use std::num::NonZeroU32;
