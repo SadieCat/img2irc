@@ -134,6 +134,18 @@ lazy_static! {
         (97, (0xE2, 0xE2, 0xE2)),
         (98, (0xFF, 0xFF, 0xFF)),
     ]);
+
+    // Unicode block element characters used for transparency.
+    static ref TILES: Vec<(u8, &'static str)> = vec![
+        (0,   "\u{20}\u{20}"),
+        (63,  "\u{2591}\u{2591}"),
+        (127, "\u{2592}\u{2592}"),
+        (191, "\u{2593}\u{2593}"),
+        (255, "\u{2588}\u{2588}"),
+    ];
+
+    // Unicode block element character that is entirely solid.
+    static ref SOLID_TILE: &'static str = TILES.last().unwrap().1;
 }
 
 /// Different types of IRC colour code.
@@ -151,7 +163,7 @@ pub enum ColourType {
 
 impl ColourType {
     /// Finds the nearest IRC colour code to a pixel.
-    fn find_nearest(pixel: &[u8], codes: &ColourCodes) -> u8 {
+    fn find_nearest_colour(pixel: &[u8], codes: &ColourCodes) -> u8 {
         let oklab_pixel = srgb_to_oklab(Rgb::new(pixel[0], pixel[1], pixel[2]));
         let mut smallest_irc = 99u8;
         let mut smallest_diff = f64::MAX;
@@ -172,30 +184,72 @@ impl ColourType {
         return smallest_irc;
     }
 
-    /// Converts a pixel to an IRC colour code.
-    pub fn to_irc(&self, pixel: &[u8], escape_type: &EscapeType, min_alpha: u8) -> String {
-        if pixel[3] < min_alpha {
-            return escape_type.reset().into();
+    // Finds the most appropriate tile character for an alpha level.
+    fn find_nearest_tile(alpha: u8, solid: bool) -> (&'static str, bool) {
+        if solid {
+            // No transparency allowed.
+            return (*SOLID_TILE, true);
         }
+        let mut nearest_dist = u8::MAX;
+        let mut nearest_tile = "";
+        for (tile_alpha, tile) in TILES.iter() {
+            let tile_diff = tile_alpha.abs_diff(alpha);
+            if nearest_dist >= tile_diff {
+                nearest_dist = tile_diff;
+                nearest_tile = tile;
+            }
+        }
+
+        // We have the nearest tile.
+        return (nearest_tile, nearest_tile == *SOLID_TILE);
+    }
+
+    /// Converts a pixel to an IRC colour code.
+    pub fn to_irc(
+        &self,
+        pixel: &[u8],
+        escape_type: &EscapeType,
+        min_alpha: u8,
+        solid: bool,
+    ) -> (String, &str) {
+        let tile = Self::find_nearest_tile(pixel[3], solid);
+
+        if pixel[3] < min_alpha {
+            return (escape_type.reset().into(), tile.0);
+        }
+
+        let colour: String;
         match self {
             Self::Basic => {
                 let escape = escape_type.colour();
-                let code = Self::find_nearest(pixel, &BASIC);
-                format!("{}{:0>2},{:0>2}", escape, code, code)
+                let fg_code = Self::find_nearest_colour(pixel, &BASIC);
+                let bg_code = if tile.1 { fg_code } else { 99 };
+                colour = format!("{}{:0>2},{:0>2}", escape, fg_code, bg_code);
             }
             Self::Extended => {
                 let escape = escape_type.colour();
-                let code = Self::find_nearest(pixel, &EXTENDED);
-                format!("{}{:0>2},{:0>2}", escape, code, code)
+                let fg_code = Self::find_nearest_colour(pixel, &EXTENDED);
+                let bg_code = if tile.1 { fg_code } else { 99 };
+                colour = format!("{}{:0>2},{:0>2}", escape, fg_code, bg_code);
             }
             Self::RGB => {
                 let escape = escape_type.hex_colour();
-                format!(
-                    "{}{:0>2X}{:0>2X}{:0>2X},{:0>2X}{:0>2X}{:0>2X}",
-                    escape, pixel[0], pixel[1], pixel[2], pixel[0], pixel[1], pixel[2]
-                )
+                colour = if tile.1 {
+                    format!(
+                        "{}{:0>2X}{:0>2X}{:0>2X},{:0>2X}{:0>2X}{:0>2X}",
+                        escape, pixel[0], pixel[1], pixel[2], pixel[0], pixel[1], pixel[2]
+                    )
+                } else {
+                    let reset = escape_type.reset();
+                    format!(
+                        "{}{}{:0>2X}{:0>2X}{:0>2X}",
+                        reset, escape, pixel[0], pixel[1], pixel[2]
+                    )
+                }
             }
         }
+
+        return (colour, tile.0);
     }
 
     /// Determines the default line width for a colour type.

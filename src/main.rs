@@ -42,6 +42,10 @@ pub struct Args {
     #[clap(value_name = "IMAGE")]
     pub source: PathBuf,
 
+    // Whether to only draw solid background characters.
+    #[clap(long, short = 's')]
+    pub solid: bool,
+
     /// The path to the output text.
     #[clap(value_name = "TARGET")]
     pub target: Option<PathBuf>,
@@ -59,7 +63,12 @@ fn main() {
     image.resize(max_width, args.max_height);
 
     // Convert the image to IRC formatting.
-    let text = image.convert(&args.colour_type, &args.escape_type, args.min_alpha);
+    let text = image.convert(
+        &args.colour_type,
+        &args.escape_type,
+        args.min_alpha,
+        args.solid,
+    );
 
     // Write the output to the target.
     let mut fh = match &args.target {

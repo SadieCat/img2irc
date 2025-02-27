@@ -22,6 +22,7 @@ impl Image {
         colour_type: &ColourType,
         escape_type: &EscapeType,
         min_alpha: u8,
+        solid: bool,
     ) -> String {
         // Iterate over all pixels and convert them.
         let mut buffer = String::new();
@@ -29,12 +30,13 @@ impl Image {
         for row in 0..self.image.height() {
             for column in 0..self.image.width() {
                 let pixel = self.image.get_pixel(column, row);
-                let colour = colour_type.to_irc(pixel.channels(), escape_type, min_alpha);
+                let (colour, tile) =
+                    colour_type.to_irc(pixel.channels(), escape_type, min_alpha, solid);
                 if colour != previous_colour {
                     buffer.push_str(&colour);
                     previous_colour = colour;
                 }
-                buffer.push_str("\u{2588}\u{2588}");
+                buffer.push_str(tile);
             }
             previous_colour.clear();
 
