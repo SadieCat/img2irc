@@ -17,8 +17,9 @@ Options:
   -H, --max-height <HEIGHT>  The maximum height of the output text
   -w, --max-width <WIDTH>    The maximum width of the output text
   -t, --min-alpha <WIDTH>    The minimum alpha level to treat as a coloured tile [default: 0]
-  -h, --help                 Print help information
-  -V, --version              Print version information
+  -s, --solid                Whether to only draw solid background characters
+  -h, --help                 Print help
+  -V, --version              Print version
 ```
 
 ## License

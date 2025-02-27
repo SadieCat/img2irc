@@ -42,7 +42,7 @@ pub struct Args {
     #[clap(value_name = "IMAGE")]
     pub source: PathBuf,
 
-    // Whether to only draw solid background characters.
+    /// Whether to only draw solid background characters.
     #[clap(long, short = 's')]
     pub solid: bool,
 
